@@ -1,0 +1,34 @@
+{
+  "name": "wsnc",
+  "version": "1.0.0",
+  "description": "web socket netcat",
+  "bin": {
+    "wsnc": "cmd.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:substack/wsnc.git"
+  },
+  "keywords": [
+    "unix",
+    "stdin",
+    "stdout",
+    "websocket",
+    "cat",
+    "netcat",
+    "nc"
+  ],
+  "author": "substack",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/substack/wsnc/issues"
+  },
+  "homepage": "https://github.com/substack/wsnc",
+  "dependencies": {
+    "minimist": "^1.1.1",
+    "websocket-stream": "^1.4.0"
+  }
+}
