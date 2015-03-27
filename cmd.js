@@ -33,7 +33,9 @@ if (argv.listen) {
 }
 else if (addr) {
     var u = url.parse(addr);
-    if (!u.protocol) addr = 'ws://' + addr;
+    if (!/^\w+:\/\//.test(addr)) {
+        addr = 'ws://' + addr;
+    }
     else if (u.protocol === 'http:') {
         u.protocol = 'ws:';
         addr = url.format(u);
