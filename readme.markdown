@@ -1,0 +1,32 @@
+# wsnc
+
+websocket netcat
+
+# usage
+
+```
+wsnc URL
+
+  Connect to a websocket URL, reading from stdin and writing to stdout. 
+
+wsnc -l PORT
+
+  Listen on PORT for incoming websocket connections.
+  The first connection will read from stdin and write to stdout.
+
+EXAMPLE
+
+    wsnc ws://wizard.institute/spells
+    wsnc -l 5000
+
+```
+
+# install
+
+```
+npm install -g wsnc
+```
+
+# license
+
+MIT
