@@ -4,10 +4,11 @@ var fs = require('fs');
 var path = require('path');
 var http = require('http');
 var url = require('url');
+var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen' }
+    alias: { l: 'listen', p: 'port' }
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -15,7 +16,12 @@ if (argv.help || argv._[0] === 'help') return usage(0);
 var wsock = require('websocket-stream');
 var addr = argv._[0];
 
-if (argv.listen) {
+if (argv.listen !== undefined) {
+    var port = defined(
+        argv.listen === true ? undefined : argv.listen,
+        argv.port,
+        0
+    );
     var server = http.createServer(function (req, res) {
         res.statusCode = 404;
         res.end('not found\n');
@@ -29,19 +35,27 @@ if (argv.listen) {
         });
     };
     var wss = wsock.createServer({ server: server }, handle);
-    server.listen(argv.listen);
+    server.listen(port);
 }
 else if (addr) {
     var u = url.parse(addr);
     if (!/^\w+:\/\//.test(addr)) {
         addr = 'ws://' + addr;
+        u = url.parse(addr);
     }
     else if (u.protocol === 'http:') {
         u.protocol = 'ws:';
         addr = url.format(u);
+        u = url.parse(addr);
     }
     else if (u.protocol === 'https:') {
         u.protocol = 'wss:';
+        addr = url.format(u);
+        u = url.parse(addr);
+    }
+    if (argv.port !== undefined) {
+        u.port = argv.port;
+        u.host = u.hostname + ':' + u.port;
         addr = url.format(u);
     }
     
