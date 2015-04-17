@@ -1,6 +1,6 @@
 {
   "name": "wsnc",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "web socket netcat",
   "bin": {
     "wsnc": "cmd.js"
