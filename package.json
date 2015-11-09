@@ -29,7 +29,7 @@
   "homepage": "https://github.com/substack/wsnc",
   "dependencies": {
     "defined": "^1.0.0",
-    "minimist": "^1.1.1",
-    "websocket-stream": "^1.4.0"
+    "minimist": "^1.2.0",
+    "websocket-stream": "^2.1.0"
   }
 }
