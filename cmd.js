@@ -35,7 +35,7 @@ if (argv.listen !== undefined) {
                });
     }
     else {
-      server = protocol.createServer(function (req, res) {
+      server = http.createServer(function (req, res) {
                  res.statusCode = 404;
                  res.end('not found\n');
                });
