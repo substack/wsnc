@@ -5,7 +5,7 @@ wsnc URL
 wsnc -l PORT [-s]
 
   Listen on PORT for incoming websocket connections. If -s is specified,
-  the server will listen for incoming secure websocket connects.
+  the server will listen for incoming secure websocket connections.
   The first connection will read from stdin and write to stdout.
 
 EXAMPLE
