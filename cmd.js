@@ -3,12 +3,13 @@
 var fs = require('fs');
 var path = require('path');
 var http = require('http');
+var https = require('https');
 var url = require('url');
 var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen', p: 'port' }
+    alias: { l: 'listen', p: 'port', s: 'ssl' }
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -22,10 +23,24 @@ if (argv.listen !== undefined) {
         argv.port,
         0
     );
-    var server = http.createServer(function (req, res) {
-        res.statusCode = 404;
-        res.end('not found\n');
-    });
+    var server = null;
+
+    if (argv.ssl) {
+      server = https.createServer({
+                 cert: fs.readFileSync('./cert/cert.pem'),
+                 key: fs.readFileSync('./cert/key.pem')
+               }, function (req, res) {
+                 res.statusCode = 404;
+                 res.end('not found\n');
+               });
+    }
+    else {
+      server = protocol.createServer(function (req, res) {
+                 res.statusCode = 404;
+                 res.end('not found\n');
+               });
+    }
+
     var handle = function (stream) {
         process.stdin.pipe(stream).pipe(process.stdout);
         stream.on('end', function () {
