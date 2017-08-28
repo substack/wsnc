@@ -84,7 +84,7 @@ else if (addr) {
     var client = wsock(addr);
 
     if (argv.verbose) {
-      client.on('open', function() {
+      client.on('connect', function() {
         console.log('Connection to %s succeeded!', addr);
       });
     }
