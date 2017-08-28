@@ -57,6 +57,13 @@ if (argv.listen !== undefined) {
         });
     };
     var wss = wsock.createServer({ server: server }, handle);
+
+    if (argv.verbose) {
+      wss.on('connection', function(ws) {
+        console.log('Connection accepted');
+      });
+    }
+
     server.listen(port);
 }
 else if (addr) {
