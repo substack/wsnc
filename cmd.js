@@ -9,8 +9,8 @@ var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose' },
-    boolean: [ 'v', 's' ]
+    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose', i: 'ignoreSelfSignedCertError' },
+    boolean: [ 'v', 's', 'i' ]
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -79,6 +79,10 @@ else if (addr) {
         u.port = argv.port;
         u.host = u.hostname + ':' + u.port;
         addr = url.format(u);
+    }
+
+    if (argv.ignoreSelfSignedCertError) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
     }
 
     var client = wsock(addr);
