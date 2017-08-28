@@ -10,7 +10,7 @@ var defined = require('defined');
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
     alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose' },
-    boolean: 'v'
+    boolean: [ 'v', 's' ]
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
