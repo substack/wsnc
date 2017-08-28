@@ -9,7 +9,7 @@ var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen', p: 'port', s: 'ssl' }
+    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose' }
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -26,6 +26,9 @@ if (argv.listen !== undefined) {
     var server = null;
 
     if (argv.ssl) {
+      if (argv.verbose) {
+        console.log('Listening on [0.0.0.0] (wss, port %s)', argv.port);
+      }
       server = https.createServer({
                  cert: fs.readFileSync('./cert/cert.pem'),
                  key: fs.readFileSync('./cert/key.pem')
@@ -35,6 +38,9 @@ if (argv.listen !== undefined) {
                });
     }
     else {
+      if (argv.verbose) {
+        console.log('Listening on [0.0.0.0] (ws, port %s)', argv.port);
+      }
       server = http.createServer(function (req, res) {
                  res.statusCode = 404;
                  res.end('not found\n');
@@ -74,8 +80,16 @@ else if (addr) {
         addr = url.format(u);
     }
     
+    var client = wsock(addr);
+
+    if (argv.verbose) {
+      client.on('open', function() {
+        console.log('Connection to %s succeeded!', a);
+      });
+    }
+
     process.stdin
-        .pipe(wsock(addr))
+        .pipe(client)
         .pipe(process.stdout)
     ;
 }

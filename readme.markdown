@@ -8,19 +8,23 @@ websocket netcat
 wsnc URL
 
   Connect to a websocket URL, reading from stdin and writing to stdout. 
+  Add -v for verbose mode.
 
 wsnc -l PORT [-s]
 
   Listen on PORT for incoming websocket connections. If -s is specified,
   the server will listen for incoming secure websocket connections.
   The first connection will read from stdin and write to stdout.
+  Add -v for verbose mode.
 
 EXAMPLE
 
     wsnc ws://wizard.institute/spells
     wsnc wss://wizard.institute/spells
+    wsnc -v ws://wizard.institute/spells
     wsnc -l 5000
     wsnc -l 443 -s
+    wsnc -v -l 443 -s
 
 ```
 
