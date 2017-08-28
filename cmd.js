@@ -3,12 +3,14 @@
 var fs = require('fs');
 var path = require('path');
 var http = require('http');
+var https = require('https');
 var url = require('url');
 var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen', p: 'port' }
+    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose', i: 'ignoreSelfSignedCertError' },
+    boolean: [ 'v', 's', 'i' ]
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -22,10 +24,30 @@ if (argv.listen !== undefined) {
         argv.port,
         0
     );
-    var server = http.createServer(function (req, res) {
-        res.statusCode = 404;
-        res.end('not found\n');
-    });
+    var server = null;
+
+    if (argv.ssl) {
+      if (argv.verbose) {
+        console.log('Listening on [0.0.0.0]: (wss, port %d)', port);
+      }
+      server = https.createServer({
+                 cert: fs.readFileSync('./cert/cert.pem'),
+                 key: fs.readFileSync('./cert/key.pem')
+               }, function (req, res) {
+                 res.statusCode = 404;
+                 res.end('not found\n');
+               });
+    }
+    else {
+      if (argv.verbose) {
+        console.log('Listening on [0.0.0.0] (ws, port %d)', port);
+      }
+      server = http.createServer(function (req, res) {
+                 res.statusCode = 404;
+                 res.end('not found\n');
+               });
+    }
+
     var handle = function (stream) {
         process.stdin.pipe(stream).pipe(process.stdout);
         stream.on('end', function () {
@@ -35,6 +57,13 @@ if (argv.listen !== undefined) {
         });
     };
     var wss = wsock.createServer({ server: server }, handle);
+
+    if (argv.verbose) {
+      wss.on('connection', function(ws) {
+        console.log('Connection accepted');
+      });
+    }
+
     server.listen(port);
 }
 else if (addr) {
@@ -58,9 +87,21 @@ else if (addr) {
         u.host = u.hostname + ':' + u.port;
         addr = url.format(u);
     }
-    
+
+    if (argv.ignoreSelfSignedCertError) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    }
+
+    var client = wsock(addr);
+
+    if (argv.verbose) {
+      client.on('connect', function() {
+        console.log('Connection to %s succeeded!', addr);
+      });
+    }
+
     process.stdin
-        .pipe(wsock(addr))
+        .pipe(client)
         .pipe(process.stdout)
     ;
 }
@@ -71,3 +112,8 @@ function usage (code) {
     r.on('end', function () { if (code) process.exit(code) });
     r.pipe(process.stdout);
 }
+
+// Added for Docker image support (allows control-c to exit)
+process.on('SIGINT', function() {
+  process.exit();
+});
