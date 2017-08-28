@@ -9,7 +9,8 @@ var defined = require('defined');
 
 var minimist = require('minimist');
 var argv = minimist(process.argv.slice(2), {
-    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose' }
+    alias: { l: 'listen', p: 'port', s: 'ssl', v: 'verbose' },
+    boolean: 'v'
 });
 
 if (argv.help || argv._[0] === 'help') return usage(0);
@@ -27,7 +28,7 @@ if (argv.listen !== undefined) {
 
     if (argv.ssl) {
       if (argv.verbose) {
-        console.log('Listening on [0.0.0.0] (wss, port %s)', argv.port);
+        console.log('Listening on [0.0.0.0]: (wss, port %d)', port);
       }
       server = https.createServer({
                  cert: fs.readFileSync('./cert/cert.pem'),
@@ -39,7 +40,7 @@ if (argv.listen !== undefined) {
     }
     else {
       if (argv.verbose) {
-        console.log('Listening on [0.0.0.0] (ws, port %s)', argv.port);
+        console.log('Listening on [0.0.0.0] (ws, port %d)', port);
       }
       server = http.createServer(function (req, res) {
                  res.statusCode = 404;
@@ -79,12 +80,12 @@ else if (addr) {
         u.host = u.hostname + ':' + u.port;
         addr = url.format(u);
     }
-    
+
     var client = wsock(addr);
 
     if (argv.verbose) {
       client.on('open', function() {
-        console.log('Connection to %s succeeded!', a);
+        console.log('Connection to %s succeeded!', addr);
       });
     }
 
@@ -100,3 +101,8 @@ function usage (code) {
     r.on('end', function () { if (code) process.exit(code) });
     r.pipe(process.stdout);
 }
+
+// Added for Docker image support (allows control-c to exit)
+process.on('SIGINT', function() {
+  process.exit();
+});
